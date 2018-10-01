@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using Substrate;
 using Substrate.Core;
 using Substrate.Nbt;
+
 
 // This example will reset and rebuild the lighting (heightmap, block light,
 // skylight) for all chunks in a map.
@@ -15,6 +17,7 @@ using Substrate.Nbt;
 
 namespace Relight
 {
+    using IO = System.IO;
     class Program
     {
         static void Main (string[] args)
@@ -23,18 +26,15 @@ namespace Relight
                 Console.WriteLine("You must specify a target directory");
                 return;
             }
-            string dest = args[0];
-            /*
-            NbtVerifier.InvalidTagType += (e) => {
-                throw new Exception("Invalid Tag Type: " + e.TagName + " [" + e.Tag + "]");
-            };
-            NbtVerifier.InvalidTagValue += (e) => {
-                throw new Exception("Invalid Tag Value: " + e.TagName + " [" + e.Tag + "]");
-            };
-            NbtVerifier.MissingTag += (e) => {
-                throw new Exception("Missing Tag: " + e.TagName);
-            };
-            */
+            string path = args[0];
+
+            if (!Directory.Exists(path)) {
+                if (File.Exists(path)) {
+                    path = IO.Path.GetDirectoryName(path);
+                } else {
+                    throw new DirectoryNotFoundException("Directory '" + path + "' not found");
+                }
+            }
 
             // Opening an NbtWorld will try to autodetect if a world is Alpha-style or Beta-style
             Console.WriteLine("AnvilWorld.Open(dest)");
